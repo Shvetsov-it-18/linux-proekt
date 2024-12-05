@@ -1,45 +1,46 @@
 #include <iostream>
-#include <vector>
 
+const int SIZE = 3; // Р Р°Р·РјРµСЂ РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ
+char board[SIZE][SIZE]; // РРіСЂРѕРІРѕРµ РїРѕР»Рµ
 using namespace std;
-
-const int SIZE = 3; // Размер игрового поля
-
-// Функция для вывода игрового поля
-void printBoard(const vector<vector<char>>& board) {
-    cout << "\n";
+// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ
+void initializeBoard() {
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            board[i][j] = ' '; // РџСѓСЃС‚РѕРµ РїРѕР»Рµ
+        }
+    }
+}
+// Р’С‹РІРѕРґ РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ
+void displayBoard() {
+    cout << "РўРµРєСѓС‰РёР№ СЃС‚Р°С‚СѓСЃ РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ:\n";
     for (int i = 0; i < SIZE; ++i) {
         for (int j = 0; j < SIZE; ++j) {
             cout << board[i][j];
-            if (j < SIZE - 1) cout << " | ";
+            if (j < SIZE - 1) cout << " | "; // Р Р°Р·РґРµР»РёС‚РµР»Рё
         }
-        cout << "\n";
-        if (i < SIZE - 1) cout << "---------\n";
+        cout << endl;
+        if (i < SIZE - 1) cout << "---------\n"; // Р Р°Р·РґРµР»РёС‚РµР»СЊРЅС‹Рµ Р»РёРЅРёРё
     }
-    cout << "\n";
 }
-
-// Функция для проверки победы
-bool checkWin(const vector<vector<char>>& board, char symbol) {
-    // Проверяем строки и столбцы
+// РџСЂРѕРІРµСЂРєР° РЅР° РїРѕР±РµРґСѓ
+bool checkWin(char player) {
+    // РџСЂРѕРІРµСЂРєР° СЃС‚СЂРѕРє Рё СЃС‚РѕР»Р±С†РѕРІ
     for (int i = 0; i < SIZE; ++i) {
-        if ((board[i][0] == symbol && board[i][1] == symbol && board[i][2] == symbol) ||
-            (board[0][i] == symbol && board[1][i] == symbol && board[2][i] == symbol)) {
+        if ((board[i][0] == player && board[i][1] == player && board[i][2] == player) ||
+            (board[0][i] == player && board[1][i] == player && board[2][i] == player)) {
             return true;
         }
     }
-
-    // Проверяем диагонали
-    if ((board[0][0] == symbol && board[1][1] == symbol && board[2][2] == symbol) ||
-        (board[0][2] == symbol && board[1][1] == symbol && board[2][0] == symbol)) {
+    // РџСЂРѕРІРµСЂРєР° РґРёР°РіРѕРЅР°Р»РµР№
+    if ((board[0][0] == player && board[1][1] == player && board[2][2] == player) ||
+        (board[0][2] == player && board[1][1] == player && board[2][0] == player)) {
         return true;
     }
-
     return false;
 }
-
-// Функция для проверки на ничью
-bool checkDraw(const vector<vector<char>>& board) {
+// РџСЂРѕРІРµСЂРєР° Р·Р°РїРѕР»РЅРµРЅРЅРѕСЃС‚Рё РїРѕР»СЏ
+bool isBoardFull() {
     for (int i = 0; i < SIZE; ++i) {
         for (int j = 0; j < SIZE; ++j) {
             if (board[i][j] == ' ') return false;
@@ -47,61 +48,40 @@ bool checkDraw(const vector<vector<char>>& board) {
     }
     return true;
 }
-
+// РћР±СЂР°Р±РѕС‚РєР° С…РѕРґР°
+bool makeMove(int row, int col, char player) {
+    if (row >= 0 && row < SIZE && col >= 0 && col < SIZE && board[row][col] == ' ') {
+        board[row][col] = player;
+        return true;
+    }
+    return false;
+}
+// РћСЃРЅРѕРІРЅР°СЏ С„СѓРЅРєС†РёСЏ РёРіСЂС‹
 int main() {
-    setlocale(LC_ALL, "RU");
-    vector<vector<char>> board(SIZE, vector<char>(SIZE, ' ')); // Игровое поле
-    char playerSymbol, opponentSymbol;
-    char currentPlayer;
-
-    cout << "Добро пожаловать в игру Крестики-Нолики!\n";
-
-    // Выбор символа игрока
+    initializeBoard(); // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РёРіСЂРѕРІРѕРіРѕ РїРѕР»СЏ
+    char player = 'X'; // РЎРёРјРІРѕР» С‚РµРєСѓС‰РµРіРѕ РёРіСЂРѕРєР°
+    int row, col;
     while (true) {
-        cout << "Выберите ваш символ (x или 0): ";
-        cin >> playerSymbol;
-        if (playerSymbol == 'x' || playerSymbol == '0') {
-            opponentSymbol = (playerSymbol == 'x') ? '0' : 'x';
-            break;
-        }
-        else {
-            cout << "Некорректный выбор. Попробуйте снова.\n";
-        }
-    }
-
-    currentPlayer = playerSymbol; // Игрок начинает
-    printBoard(board);
-
-    while (true) {
-        int row, col;
-        cout << "Ход игрока " << currentPlayer << ". Введите строку и столбец (0-2): ";
+        displayBoard(); // Р’С‹РІРѕРґ С‚РµРєСѓС‰РµРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ РїРѕР»СЏ
+        cout << "РРіСЂРѕРє " << player << ", РІРІРµРґРёС‚Рµ СЃС‚СЂРѕРєСѓ Рё СЃС‚РѕР»Р±РµС† (0-2): ";
         cin >> row >> col;
-
-        // Проверка корректности ввода
-        if (row < 0 || row >= SIZE || col < 0 || col >= SIZE || board[row][col] != ' ') {
-            cout << "Некорректный ход. Попробуйте снова.\n";
-            continue;
+        // Р•СЃР»Рё С…РѕРґ СѓСЃРїРµС€РµРЅ
+        if (makeMove(row, col, player)) {
+            // РџСЂРѕРІРµСЂРєР° РЅР° РїРѕР±РµРґСѓ
+            if (checkWin(player)) {
+                displayBoard(); // Р’С‹РІРѕРґ С„РёРЅР°Р»СЊРЅРѕРіРѕ РїРѕР»СЏ
+                cout << "РРіСЂРѕРє " << player << " РІС‹РёРіСЂР°Р»!\n";
+                break;
+            } else if (isBoardFull()) { // РџСЂРѕРІРµСЂРєР° РЅР° РЅРёС‡СЊСЋ
+                displayBoard(); // Р’С‹РІРѕРґ С„РёРЅР°Р»СЊРЅРѕРіРѕ РїРѕР»СЏ
+                cout << "РќРёС‡СЊСЏ!\n";
+                break;
+            }
+            // РЎРјРµРЅР° РёРіСЂРѕРєР°
+            player = (player == 'X') ? 'O' : 'X';
+        } else {
+            cout << "РќРµРІРµСЂРЅС‹Р№ С…РѕРґ. РџРѕРїСЂРѕР±СѓР№С‚Рµ СЃРЅРѕРІР°.\n";
         }
-
-        // Обновляем поле
-        board[row][col] = currentPlayer;
-        printBoard(board);
-
-        // Проверяем победу
-        if (checkWin(board, currentPlayer)) {
-            cout << "Игрок " << currentPlayer << " победил!\n";
-            break;
-        }
-
-        // Проверяем ничью
-        if (checkDraw(board)) {
-            cout << "Ничья!\n";
-            break;
-        }
-
-        // Смена игрока
-        currentPlayer = (currentPlayer == playerSymbol) ? opponentSymbol : playerSymbol;
     }
-
-    return 0;
+    return 0; // Р’С‹С…РѕРґ РёР· РїСЂРѕРіСЂР°РјРјС‹
 }
