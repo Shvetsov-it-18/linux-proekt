@@ -1,87 +1,103 @@
+// Программа на C++ для реализации игры в крестики-нолики
 #include <iostream>
-
-const int SIZE = 3; // Размер игрового поля
-char board[SIZE][SIZE]; // Игровое поле
 using namespace std;
-// Инициализация игрового поля
-void initializeBoard() {
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            board[i][j] = ' '; // Пустое поле
+
+// Функция для отрисовки игрового поля
+void drawBoard(char board[3][3])
+{
+    cout << "-------------\n";
+    for (int i = 0; i < 3; i++) {
+        cout << "| ";
+        for (int j = 0; j < 3; j++) {
+            cout << board[i][j] << " | ";
         }
+        cout << "\n-------------\n";
     }
 }
-// Вывод игрового поля
-void displayBoard() {
-    cout << "Текущий статус игрового поля:\n";
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            cout << board[i][j];
-            if (j < SIZE - 1) cout << " | "; // Разделители
-        }
-        cout << endl;
-        if (i < SIZE - 1) cout << "---------\n"; // Разделительные линии
-    }
-}
-// Проверка на победу
-bool checkWin(char player) {
-    // Проверка строк и столбцов
-    for (int i = 0; i < SIZE; ++i) {
-        if ((board[i][0] == player && board[i][1] == player && board[i][2] == player) ||
-            (board[0][i] == player && board[1][i] == player && board[2][i] == player)) {
+
+// Функция для проверки на победу
+bool checkWin(char board[3][3], char player)
+{
+    // Проверка строк, столбцов и диагоналей
+    for (int i = 0; i < 3; i++) {
+        if (board[i][0] == player && board[i][1] == player
+            && board[i][2] == player)
             return true;
-        }
+        if (board[0][i] == player && board[1][i] == player
+            && board[2][i] == player)
+            return true;
     }
-    // Проверка диагоналей
-    if ((board[0][0] == player && board[1][1] == player && board[2][2] == player) ||
-        (board[0][2] == player && board[1][1] == player && board[2][0] == player)) {
+    if (board[0][0] == player && board[1][1] == player
+        && board[2][2] == player)
         return true;
-    }
+    if (board[0][2] == player && board[1][1] == player
+        && board[2][0] == player)
+        return true;
     return false;
 }
-// Проверка заполненности поля
-bool isBoardFull() {
-    for (int i = 0; i < SIZE; ++i) {
-        for (int j = 0; j < SIZE; ++j) {
-            if (board[i][j] == ' ') return false;
-        }
-    }
-    return true;
-}
-// Обработка хода
-bool makeMove(int row, int col, char player) {
-    if (row >= 0 && row < SIZE && col >= 0 && col < SIZE && board[row][col] == ' ') {
-        board[row][col] = player;
-        return true;
-    }
-    return false;
-}
-// Основная функция игры
-int main() {
-    initializeBoard(); // Инициализация игрового поля
-    char player = 'X'; // Символ текущего игрока
+
+int main()
+{
+    // Инициализация поля и игроков
+    char board[3][3] = { { ' ', ' ', ' ' },
+                         { ' ', ' ', ' ' },
+                         { ' ', ' ', ' ' } };
+    
+    char player1, player2;
+    cout << "Игрок 1, выберите символ (X или O): ";
+    cin >> player1;
+    
+    // Проверим, чтобы игрок 2 получил противоположный символ
+    player2 = (player1 == 'X') ? 'O' : 'X';
+    cout << "Игрок 2, ваш символ: " << player2 << endl;
+
+    char currentPlayer = player1; // Текущий игрок
     int row, col;
-    while (true) {
-        displayBoard(); // Вывод текущего состояния поля
-        cout << "Игрок " << player << ", введите строку и столбец (0-2): ";
-        cin >> row >> col;
-        // Если ход успешен
-        if (makeMove(row, col, player)) {
-            // Проверка на победу
-            if (checkWin(player)) {
-                displayBoard(); // Вывод финального поля
-                cout << "Игрок " << player << " выиграл!\n";
-                break;
-            } else if (isBoardFull()) { // Проверка на ничью
-                displayBoard(); // Вывод финального поля
-                cout << "Ничья!\n";
-                break;
+    int turn; // Объявляем переменную для количества ходов
+
+    cout << "Добро пожаловать в Крестики-Нолики!\n";
+
+    // Игровой цикл
+    for (turn = 0; turn < 9; turn++) {
+        // Отрисовка игрового поля
+        drawBoard(board);
+
+        // Запрос ввода
+        while (true) {
+            cout << "Игрок " << currentPlayer
+                 << ", введите строку (0-2) и столбец (0-2): ";
+            cin >> row >> col;
+
+            if (board[row][col] != ' ' || row < 0 || row > 2
+                || col < 0 || col > 2) {
+                cout << "Неверный ход. Попробуйте снова.\n";
             }
-            // Смена игрока
-            player = (player == 'X') ? 'O' : 'X';
-        } else {
-            cout << "Неверный ход. Попробуйте снова.\n";
+            else {
+                break; // Корректный ввод, выходим из цикла.
+            }
         }
+
+        // Выполнение хода
+        board[row][col] = currentPlayer;
+
+        // Проверка на победу после выполнения хода
+        if (checkWin(board, currentPlayer)) {
+            drawBoard(board);
+            cout << "Игрок " << currentPlayer << " победил!\n";
+            break; // Выход из цикла после победы.
+        }
+
+        // Переключение на другого игрока
+        currentPlayer = (currentPlayer == player1) ? player2 : player1;
     }
+
+    // Завершение игры
+    drawBoard(board);
+
+    // Проверка на ничью
+    if (turn == 9 && !checkWin(board, player1) && !checkWin(board, player2)) {
+        cout << "Ничья!\n";
+    }
+
     return 0; // Выход из программы
 }
