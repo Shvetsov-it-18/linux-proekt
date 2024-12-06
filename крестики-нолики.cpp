@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits> // Для std::numeric_limits
 using namespace std;
 
 // Функция для отрисовки игрового поля
@@ -59,6 +60,14 @@ int main() {
         while (true) {
             cout << "Игрок " << currentPlayer << ", введите через пробел строку (1-3) и столбец (1-3): ";
             cin >> row >> col;
+
+            // Проверка ввода на успешность
+            if (cin.fail()) {
+                cin.clear(); // Сбросить флаг ошибки
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Игнорировать оставшийся ввод
+                cout << "Неверный ввод. Пожалуйста, введите только числа.\n";
+                continue; // Запросить ввод снова
+            }
 
             // Приведение ввода к индексам массива (0-2)
             row--;
