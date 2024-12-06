@@ -3,8 +3,7 @@
 using namespace std;
 
 // Функция для отрисовки игрового поля
-void drawBoard(char board[3][3])
-{
+void drawBoard(char board[3][3]) {
     cout << "-------------\n";
     for (int i = 0; i < 3; i++) {
         cout << "| ";
